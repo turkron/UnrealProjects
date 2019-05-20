@@ -1,5 +1,11 @@
-/Section_03/buildingEscape/Intermediate
-/Section_03/buildingEscape/Saved
-/Section_03/buildingEscape/Binaries
+#UnrealGeneratedFiles
+*/Intermediate
+*/Saved
+*/Binaries
+*/Build
+*/DerivedDataCache
+##########################
 /Section_03/buildingEscape/.vs/buildingEscape/v15/*.opendb
 /Section_03/buildingEscape/.vs
+*db
+/Section_03/buildingEscape/Content/StarterContent
