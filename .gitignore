@@ -9,9 +9,11 @@
 ##########################
 /Section_03/buildingEscape/.vs/buildingEscape/v15/*.opendb
 /Section_03/buildingEscape/.vs
-/Section_03/buildingEscape/Content/StarterContent
+/Section_03/buildingEscape/Content/StarterContent/Textures
+/Section_03/buildingEscape/Content/StarterContent/HDRI
 
 ########################
 #VSGeneratedFiles
 ########################
 *.VC.db
+*.suo
