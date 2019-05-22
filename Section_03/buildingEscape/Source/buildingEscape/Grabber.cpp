@@ -4,6 +4,10 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "DrawDebugHelpers.h"
+#include "Engine/EngineTypes.h"
+#include "GameFramework/Actor.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Components/InputComponent.h"
 
 #define OUT
 
@@ -23,8 +27,16 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	UE_LOG(LogTemp, Warning, TEXT("Grabber reporting for duty!"))
+	///look for attached Physics Handle 
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	if (!PhysicsHandle) {
+		//handle not found
+		UE_LOG(LogTemp,Error,TEXT("%s missing physics handler component"), *GetOwner()->GetName())
+	}
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
+	if (InputComponent) {
+		UE_LOG(LogTemp, Warning, TEXT("Found input component on %s"), *GetOwner()->GetName())
+	}
 	
 }
 
@@ -35,26 +47,45 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-	//Get player view point this tick
+	///Get player view point this tick
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(
 		OUT PlayerViewPointLocation,
 		OUT PlayerViewPointRotation
 	);
-	//UE_LOG(LogTemp, Warning, TEXT("Grabber reporting view point. Location: %s , Rotation: %s"),*PlayerViewPointLocation.ToString(),*PlayerViewPointRotation.ToString())
+
 	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
 
-	DrawDebugLine(GetWorld(), 
-		PlayerViewPointLocation, 
+
+	///Draw a red line in the world to visualise. 
+	DrawDebugLine(GetWorld(),
+		PlayerViewPointLocation,
 		LineTraceEnd,
-		FColor(255,0,0),
+		FColor(255, 0, 0),
 		false,
 		0.f,
 		0,
 		10.f
-		);
-	//Draw a red line in the world to visualise. 
+	);
 
+	///Setup query parameters
+	FCollisionQueryParams TraceParameters(FName(TEXT("")), false, GetOwner());
+
+	///Line-trace (AKA ray-cast) out to reach distance. 
+	FHitResult Hit;
+	GetWorld()->LineTraceSingleByObjectType(
+		OUT Hit, PlayerViewPointLocation, LineTraceEnd,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+		TraceParameters
+	);
+
+	///see what we have hit
+	AActor* ActorHit = Hit.GetActor();
+	if (ActorHit) {
+		UE_LOG(LogTemp, Warning, TEXT("Actor is this %s"), *(ActorHit->GetName()))
+	}
+
+		
 }
 
